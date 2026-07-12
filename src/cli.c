@@ -41,4 +41,5 @@ void cli_print_help(void)
     printf("  vortex status [username]  Personal ranking and progress\n");
     printf("  vortex news               Latest community announcements\n");
     printf("  vortex help               Show this help message\n");
+    printf("  vortex --version          Show version info\n");
 }
