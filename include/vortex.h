@@ -14,7 +14,8 @@ typedef enum {
     CMD_LEADERBOARD_ALL,
     CMD_STATUS,
     CMD_NEWS,
-    CMD_HELP
+    CMD_HELP,
+    CMD_VERSION
 } vortex_command;
 
 typedef struct {

@@ -109,6 +109,10 @@ int main(int argc, char **argv)
         free(news.items);
         break;
     }
+    case CMD_VERSION:
+        printf("Vortex v%s\n", VORTEX_VERSION);
+        printf("https://github.com/devuan/vortex\n");
+        break;
     case CMD_HELP:
     default:
         ui_print_banner();

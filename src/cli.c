@@ -7,10 +7,8 @@ int cli_parse(int argc, char **argv, vortex_args *args)
     memset(args, 0, sizeof(*args));
     args->command = CMD_DASHBOARD;
 
-    if (argc < 2) {
-        args->command = CMD_DASHBOARD;
+    if (argc < 2)
         return 0;
-    }
 
     if (strcmp(argv[1], "leaderboard") == 0) {
         args->command = CMD_LEADERBOARD;
@@ -24,6 +22,8 @@ int cli_parse(int argc, char **argv, vortex_args *args)
         args->command = CMD_NEWS;
     } else if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "--help") == 0) {
         args->command = CMD_HELP;
+    } else if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
+        args->command = CMD_VERSION;
     } else {
         args->command = CMD_HELP;
     }
