@@ -1,0 +1,26 @@
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+vortex
+vortex.exe
+
+# Config & cache
+.config/
+
+# Editor/IDE
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.orig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+*.pid
