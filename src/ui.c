@@ -66,7 +66,7 @@ void ui_print_status(const vortex_user_status *st)
         printf("  " HABAMAX_CYAN "Name:" HABAMAX_RESET "     %s\n", st->name);
     printf("  " HABAMAX_CYAN "Rank:" HABAMAX_RESET "     %s#%d" HABAMAX_RESET " / %d\n",
            rank_color(st->rank), st->rank, st->total_contributors);
-    if (st->commits_week > 0) {
+    if (st->total_contributors > 0) {
         printf("  " HABAMAX_CYAN "Commits:" HABAMAX_RESET "  %s%d" HABAMAX_RESET " (%s)\n",
                commit_color(st->commits_week), st->commits_week,
                st->commits_today < 0 ? "all-time" : "month");
