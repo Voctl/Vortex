@@ -234,8 +234,8 @@ static int gca_fetch_news(vortex_news *news)
     http_response res;
     if (fetch_page("https://githubcommunity.az/blog", &res) != 0) return -1;
 
-    const char *months[] = {"January","February","March","April","May","June",
-                            "July","August","September","October","November","December"};
+    static const char *months[] = {"January","February","March","April","May","June",
+                                   "July","August","September","October","November","December"};
 
     news->items = NULL;
     news->count = 0;
