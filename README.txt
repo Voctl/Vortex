@@ -1,7 +1,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                                                             │
-│   V O R T E X                                              │
-│   terminal gateway for open source                         │
+│   V O R T E X                                               │
+│   terminal gateway for open source                          │
 │                                                             │
 │   Live contributor data from githubcommunity.az             │
 │   right in your terminal. No bloat. No JS. No tracking.     │
