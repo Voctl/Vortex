@@ -16,8 +16,10 @@ int cli_parse(int argc, char **argv, vortex_args *args)
             args->command = CMD_LEADERBOARD_ALL;
     } else if (strcmp(argv[1], "status") == 0) {
         args->command = CMD_STATUS;
-        if (argc > 2)
+        if (argc > 2) {
             strncpy(args->username, argv[2], sizeof(args->username) - 1);
+            args->username[sizeof(args->username) - 1] = '\0';
+        }
     } else if (strcmp(argv[1], "news") == 0) {
         args->command = CMD_NEWS;
     } else if (strcmp(argv[1], "help") == 0 || strcmp(argv[1], "--help") == 0) {
