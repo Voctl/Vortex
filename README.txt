@@ -17,16 +17,19 @@
     vortex news                community blog feed
     vortex help                this message
 
-  DEPENDENCIES
+  
+DEPENDENCIES
 
-    gcc, make, curl (runtime only)
+   gcc, make, curl (runtime only)
 
-   BUILD
+BUILD
 
      $ make
      $ sudo make install          # PREFIX=/usr/local
 
-   BUILD (macOS)
+   
+
+BUILD (macOS)
 
      Install Xcode Command Line Tools, then build:
 
@@ -36,7 +39,9 @@
 
      curl and make ship with macOS. The system cc (clang) works as gcc.
 
-   BUILD (Windows)
+   
+
+BUILD (Windows)
 
      Option A — WSL (recommended):
 
@@ -53,6 +58,8 @@
        3. pacman -S mingw-w64-ucrt-x86_64-{gcc,make,curl}
        4. make
        5. make install
+
+
 
   DATA SOURCE
 
