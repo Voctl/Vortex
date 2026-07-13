@@ -1,93 +1,100 @@
 #include "cache.h"
+#include "vortex.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
-static void cache_path(char *buf, size_t len)
+static void cache_dir(char *buf, size_t len)
 {
     const char *home = getenv("HOME");
-    snprintf(buf, len, "%s%s%s", home ? home : "/tmp", VORTEX_CONFIG_DIR, VORTEX_CACHE_FILE);
+    snprintf(buf, len, "%s%s/cache", home ? home : "/tmp", VORTEX_CONFIG_DIR);
 }
 
 static int ensure_cache_dir(void)
 {
     char path[512];
-    const char *home = getenv("HOME");
-    if (!home) return -1;
-    snprintf(path, sizeof(path), "%s%s", home, VORTEX_CONFIG_DIR);
+    cache_dir(path, sizeof(path));
     struct stat st;
     if (stat(path, &st) == 0 && S_ISDIR(st.st_mode))
         return 0;
-    return mkdir(path, 0755);
+    const char *home = getenv("HOME");
+    if (!home) return -1;
+    snprintf(path, sizeof(path), "%s%s", home, VORTEX_CONFIG_DIR);
+    if (stat(path, &st) != 0)
+        mkdir(path, 0755);
+    char cdir[512];
+    cache_dir(cdir, sizeof(cdir));
+    return mkdir(cdir, 0755);
 }
 
-int cache_save_leaderboard(const vortex_leaderboard *lb)
+static void file_path(const char *key, const char *suffix, char *buf, size_t len)
 {
-    if (ensure_cache_dir() != 0) return -1;
+    char dir[512];
+    cache_dir(dir, sizeof(dir));
+    snprintf(buf, len, "%s/%s%s", dir, key, suffix ? suffix : "");
+}
 
-    char path[512];
-    cache_path(path, sizeof(path));
-    FILE *f = fopen(path, "w");
+int cache_get(const char *key, char **data)
+{
+    char path[512], tspath[512];
+    file_path(key, NULL, path, sizeof(path));
+    file_path(key, ".ts", tspath, sizeof(tspath));
+
+    FILE *f = fopen(tspath, "r");
     if (!f) return -1;
-
-    fprintf(f, "leaderboard\n");
-    fprintf(f, "count %d\n", lb->count);
-    for (int i = 0; i < lb->count; i++) {
-        fprintf(f, "entry %s %s %d %d %d %d %d\n",
-                lb->entries[i].username,
-                lb->entries[i].name,
-                lb->entries[i].rank,
-                lb->entries[i].commits,
-                lb->entries[i].pull_requests,
-                lb->entries[i].issues,
-                lb->entries[i].reviews);
-    }
+    long cached_ts;
+    if (fscanf(f, "%ld", &cached_ts) != 1) { fclose(f); return -1; }
     fclose(f);
+
+    time_t now = time(NULL);
+    if (now - cached_ts > VORTEX_CACHE_TTL) {
+        remove(path);
+        remove(tspath);
+        return -1;
+    }
+
+    f = fopen(path, "r");
+    if (!f) return -1;
+    fseek(f, 0, SEEK_END);
+    long len = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    *data = malloc(len + 1);
+    if (!*data) { fclose(f); return -1; }
+    size_t n = fread(*data, 1, len, f);
+    fclose(f);
+    (*data)[n] = '\0';
     return 0;
 }
 
-int cache_load_leaderboard(vortex_leaderboard *lb)
+int cache_set(const char *key, const char *data)
 {
-    char path[512];
-    cache_path(path, sizeof(path));
-    FILE *f = fopen(path, "r");
+    if (ensure_cache_dir() != 0) return -1;
+
+    char path[512], tspath[512];
+    file_path(key, NULL, path, sizeof(path));
+    file_path(key, ".ts", tspath, sizeof(tspath));
+
+    FILE *f = fopen(path, "w");
     if (!f) return -1;
+    fwrite(data, 1, strlen(data), f);
+    fclose(f);
 
-    char tag[32];
-    if (fscanf(f, "%31s", tag) != 1 || strcmp(tag, "leaderboard") != 0) {
-        fclose(f);
-        return -1;
-    }
-
-    char label[32];
-    if (fscanf(f, "%31s %d", label, &lb->count) != 2 || strcmp(label, "count") != 0) {
-        fclose(f);
-        return -1;
-    }
-
-    lb->entries = calloc(lb->count, sizeof(vortex_contributor));
-    for (int i = 0; i < lb->count; i++) {
-        if (fscanf(f, "%31s %127s %127s %d %d %d %d %d",
-                   label,
-                   lb->entries[i].username,
-                   lb->entries[i].name,
-                   &lb->entries[i].rank,
-                   &lb->entries[i].commits,
-                   &lb->entries[i].pull_requests,
-                   &lb->entries[i].issues,
-                   &lb->entries[i].reviews) != 8) {
-            break;
-        }
-    }
+    f = fopen(tspath, "w");
+    if (!f) return -1;
+    time_t now = time(NULL);
+    fprintf(f, "%ld", (long)now);
     fclose(f);
     return 0;
 }
 
 void cache_purge(void)
 {
-    char path[512];
-    cache_path(path, sizeof(path));
-    remove(path);
+    char dir[512];
+    cache_dir(dir, sizeof(dir));
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd), "rm -rf '%s' 2>/dev/null", dir);
+    system(cmd);
 }

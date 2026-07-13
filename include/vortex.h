@@ -3,10 +3,11 @@
 
 #define VORTEX_VERSION "0.1.0"
 #define VORTEX_CONFIG_DIR "/.config/vortex"
-#define VORTEX_CACHE_FILE "/cache.json"
+#define VORTEX_CACHE_FILE "/cache"
 #define VORTEX_CONFIG_FILE "/config"
+#define VORTEX_CACHE_TTL 3600
 
-#define API_BASE_URL "https://githubcommunity.az/leaderboard"
+#define API_BASE_URL "https://githubcommunity.az/api/v1"
 
 typedef enum {
     CMD_DASHBOARD,

@@ -65,7 +65,6 @@ int main(int argc, char **argv)
     case CMD_LEADERBOARD: {
         vortex_leaderboard lb = {0};
         api_fetch_monthly_leaderboard(&cfg, &lb);
-        cache_save_leaderboard(&lb);
         ui_print_banner();
 
         time_t now = time(NULL);
@@ -81,7 +80,6 @@ int main(int argc, char **argv)
     case CMD_LEADERBOARD_ALL: {
         vortex_leaderboard lb = {0};
         api_fetch_leaderboard(&cfg, &lb);
-        cache_save_leaderboard(&lb);
         ui_print_banner();
 
         printf("  " HABAMAX_GREY "All-Time Leaderboard \xE2\x80\x94 Azerbaijan GitHub Community" HABAMAX_RESET "\n\n");
@@ -111,7 +109,7 @@ int main(int argc, char **argv)
     }
     case CMD_VERSION:
         printf("Vortex v%s\n", VORTEX_VERSION);
-        printf("https://github.com/devuan/vortex\n");
+        printf("https://github.com/Voctl/vortex\n");
         break;
     case CMD_HELP:
     default:
